@@ -1,13 +1,13 @@
 # dependencies
 /node_modules
-.lock
 package-lock.json
 # testing
 /coverage
-.log
 
 # production
 /build
+.lock
+.log
 
 # misc
 .DS_Store
