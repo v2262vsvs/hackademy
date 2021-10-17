@@ -11,28 +11,12 @@ import {
 
 import React from "react"*/
 
+function LogOut() {
+  //let logged=false;
+  localStorage.removeItem("logged");
+  // window.location.reload();
 
+  return <div>Click the "Log Out" link one more time, to Log Out!</div>;
+}
 
-
-
-
-  function LogOut (){
-
-    
-
-      //let logged=false;
-      localStorage.removeItem("logged");
-      // window.location.reload(); 
-    
-      return(
-        <div>
-            Click the "Log Out" link one more time, to Log Out!
-        </div>
-
-      );
-  }
-
-
-
-
-  export default LogOut;
+export default LogOut;

@@ -1,9 +1,8 @@
-import { Fragment } from 'react'
-import { Menu, Transition } from '@headlessui/react'
-
+import { Fragment } from "react";
+import { Menu, Transition } from "@headlessui/react";
 
 function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(' ')
+  return classes.filter(Boolean).join(" ");
 }
 
 export default function Example() {
@@ -12,7 +11,6 @@ export default function Example() {
       <div>
         <Menu.Button className="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500">
           Continent
-          
         </Menu.Button>
       </div>
 
@@ -32,8 +30,8 @@ export default function Example() {
                 <a
                   href="/"
                   className={classNames(
-                    active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
-                    'block px-4 py-2 text-sm'
+                    active ? "bg-gray-100 text-gray-900" : "text-gray-700",
+                    "block px-4 py-2 text-sm"
                   )}
                 >
                   Europe
@@ -45,8 +43,8 @@ export default function Example() {
                 <a
                   href="/"
                   className={classNames(
-                    active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
-                    'block px-4 py-2 text-sm'
+                    active ? "bg-gray-100 text-gray-900" : "text-gray-700",
+                    "block px-4 py-2 text-sm"
                   )}
                 >
                   Asia
@@ -58,8 +56,8 @@ export default function Example() {
                 <a
                   href="/"
                   className={classNames(
-                    active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
-                    'block px-4 py-2 text-sm'
+                    active ? "bg-gray-100 text-gray-900" : "text-gray-700",
+                    "block px-4 py-2 text-sm"
                   )}
                 >
                   America
@@ -72,8 +70,8 @@ export default function Example() {
                   <button
                     type="submit"
                     className={classNames(
-                      active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
-                      'block w-full text-left px-4 py-2 text-sm'
+                      active ? "bg-gray-100 text-gray-900" : "text-gray-700",
+                      "block w-full text-left px-4 py-2 text-sm"
                     )}
                   >
                     Africa
@@ -85,5 +83,5 @@ export default function Example() {
         </Menu.Items>
       </Transition>
     </Menu>
-  )
+  );
 }

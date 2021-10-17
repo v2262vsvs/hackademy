@@ -1,36 +1,24 @@
-import React from 'react'
-import LogIn  from "./components/LogIn"
-import LogOut from "./components/LogOut"
-import Reload from "./components/Reload"
-import Home from "./components/Home"
+import React from "react";
+import LogIn from "./components/LogIn";
+import LogOut from "./components/LogOut";
+import Reload from "./components/Reload";
+import Home from "./components/Home";
 import { Switch, Route, Link } from "react-router-dom";
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 
+import Forecast from "./components/Forecast";
 
-import Forecast from './components/Forecast'
-
-import { Component } from 'react';
-
+import { Component } from "react";
 
 //import Home from "./Home"
 
-
-
-
-
 class App extends React.Component {
-  render(){
+  render() {
+    const user = localStorage.getItem("logged");
+    //localStorage.removeItem("logged");
 
-  const user = localStorage.getItem('logged');
-  //localStorage.removeItem("logged");
-  
-  
-
-
-
-
-  return (
+    return (
       <div>
         <nav className="navbar navbar-expand navbar-dark bg-success">
           <Link to={"/"} className="navbar-brand">
@@ -42,7 +30,6 @@ class App extends React.Component {
                 Home
               </Link>
             </li>
-            
           </div>
 
           {user ? (
@@ -53,7 +40,10 @@ class App extends React.Component {
                 </Link>
               </li>
               <li className="nav-item">
-                <a href="/logout" className="nav-link" /*onClick={this.logOut}*/>
+                <a
+                  href="/logout"
+                  className="nav-link" /*onClick={this.logOut}*/
+                >
                   Logout
                 </a>
               </li>
@@ -68,27 +58,21 @@ class App extends React.Component {
             </div>
           )}
         </nav>
-        
+
         <div className="container mt-3">
           <Switch>
-            
             <Route exact path="/login" component={LogIn} />
             <Route exact path="/logout" component={LogOut} />
             <Route exact path="/logout" component={Reload} />
             <Route exact path={["/", "/home"]} component={Home} />
             <Route exact path="/forecast" component={Forecast} />
-            
-            
           </Switch>
         </div>
-        
 
-
-        { /*<AuthVerify logOut={this.logOut}/> */}
-
+        {/*<AuthVerify logOut={this.logOut}/> */}
       </div>
     );
-  } 
+  }
 }
 
 export default App;

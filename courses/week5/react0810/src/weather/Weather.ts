@@ -1,34 +1,32 @@
-
-
 export interface Coordinates {
-    lon: number;
-    lat: number;
+  lon: number;
+  lat: number;
 }
 
 export interface WeatherLocation {
-    coord: Coordinates;
-    id: number;
-    name: string;
+  coord: Coordinates;
+  id: number;
+  name: string;
 }
 
 export interface WeatherConditions {
-    id: number;
-    main: string;
-    description: string;
-    icon: string;
+  id: number;
+  main: string;
+  description: string;
+  icon: string;
 }
 
 export interface MainWeatherData {
-    temp: number;
-    feels_like: number;
-    temp_min: number;
-    temp_max: number;
-    pressure: number;
-    humidity: number;
+  temp: number;
+  feels_like: number;
+  temp_min: number;
+  temp_max: number;
+  pressure: number;
+  humidity: number;
 }
 
 export interface Weather {
-    weather: WeatherConditions[];
-    main: MainWeatherData;
-    dt: number;
+  weather: WeatherConditions[];
+  main: MainWeatherData;
+  dt: number;
 }
