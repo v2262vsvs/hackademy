@@ -6,6 +6,7 @@ import (
 	"crypto/md5"
 	"encoding/json"
 	"errors"
+	"flag"
 	"log"
 	"net/http"
 	"os"
@@ -13,9 +14,17 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
+/*func WebHandler(w http.ResponseWriter, r *http.Request, u User, users UserRepository, hub *Hub) {
+	if !(u.Role == "AdminRole") {
+		return
+	}
+	serveWs(hub, w, r)
+}*/
 func getCakeHandler(w http.ResponseWriter, r *http.Request, u User, users UserRepository) {
+	CakeMetric.Inc()
 	w.Write([]byte(u.FavoriteCake))
 }
 func getMeHandler(w http.ResponseWriter, r *http.Request, u User, users UserRepository) {
@@ -55,6 +64,8 @@ func (uServ UserService) updateCakeHandler(w http.ResponseWriter, r *http.Reques
 		handleError(err, w)
 		return
 	}
+
+	uServ.SendChanMessage("cake updated")
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("cake updated"))
 }
@@ -84,8 +95,10 @@ func (uServ UserService) updateEmailHandler(w http.ResponseWriter, r *http.Reque
 		handleError(err, w)
 		return
 	}
+	uServ.SendChanMessage("email updated")
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("email updated"))
+
 }
 func (uServ UserService) updatePasswordHandler(w http.ResponseWriter, r *http.Request, u User, users UserRepository) {
 	params := &UserRegisterParams{}
@@ -107,6 +120,8 @@ func (uServ UserService) updatePasswordHandler(w http.ResponseWriter, r *http.Re
 	err = uServ.repository.Update(params.Email, newCake)
 	if err != nil {
 		handleError(err, w)
+		uServ.SendChanMessage("password changed")
+
 		return
 	}
 	w.WriteHeader(http.StatusOK)
@@ -130,21 +145,39 @@ func (uServ *UserService) addAdmin() error {
 	}
 	return nil
 }
+
+var addr = flag.String("addr", ":8080", "http service address")
+
 func main() {
+	a := time.Since(time.Now())
+	//recordMetrics()
+
 	os.Setenv("CAKE_ADMIN_EMAIL", "admin@mail.com")
 	os.Setenv("CAKE_ADMIN_PASSWORD", "adminadmin")
 
 	r := mux.NewRouter()
+	r.Use(prometheusMiddleware)
+	go func() {
+		http.Handle("/metrics", promhttp.Handler())
+		http.ListenAndServe(":2112", nil)
+	}()
 
 	users := NewInMemoryUserStorage()
 	userService := UserService{
-		repository: users,
+		repository:  users,
+		ChanMessage: make(chan []byte, 30),
 	}
 
+	go sender(userService.ChanMessage)
+	flag.Parse()
+	hub := newHub()
+	go hub.run()
+	userService.addAdmin()
 	jwtService, err := NewJWTService("pubkey.rsa", "privkey.rsa")
 	if err != nil {
 		panic(err)
 	}
+	//go webSocket(hub)
 
 	r.HandleFunc("/admin/ban", logRequest(jwtService.jwtAuthAdmin(userService.repository, banUserHandler))).Methods(http.MethodPost)
 	r.HandleFunc("/admin/unban", logRequest(jwtService.jwtAuthAdmin(userService.repository, unbanUserHandler))).Methods(http.MethodPost)
@@ -159,7 +192,13 @@ func main() {
 	r.HandleFunc("/user/register", logRequest(userService.Register)).Methods(http.MethodPost)
 	r.HandleFunc("/user/jwt", logRequest(wrapJwt(jwtService, userService.JWT))).Methods(http.MethodPost)
 
-	userService.addAdmin()
+	http.HandleFunc("/ws", jwtService.jwtAuthAdmin(userService.repository, func(rw http.ResponseWriter, r *http.Request, u User, users UserRepository) {
+		if u.Role == "AdminRole" {
+			serveWs(hub, rw, r)
+			//userService.SendChanMessages(time.Second * time.Duration(3))
+		}
+	}))
+	requestProcessingTimeSummaryMs.Observe(float64(time.Duration(a)))
 	srv := http.Server{
 		Addr:    ":8080",
 		Handler: r,
@@ -173,11 +212,16 @@ func main() {
 		defer cancel()
 		srv.Shutdown(ctx)
 	}()
+	/*errrr := http.ListenAndServe(*addr, nil)
+	if errrr != nil {
+		log.Fatal("ListenAndServe: ", err)
+	}*/
 
 	log.Printf("Server stared, press cntrl + C to stop ")
 	errr := srv.ListenAndServe()
 	if errr != nil {
 		log.Println("Server exited with error:", err)
 	}
+
 	log.Println("Good bye :)")
 }

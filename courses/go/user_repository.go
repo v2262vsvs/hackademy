@@ -40,6 +40,7 @@ func (repo *InMemoryUserStorage) Update(login string, userN User) error {
 		return errors.New(" there is no such user to update ")
 	}
 	repo.storage[login] = userN
+
 	return nil
 }
 

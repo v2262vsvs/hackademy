@@ -102,3 +102,38 @@ func (j *JWTService) jwtAuthRoleExecutor(AccessRole string, users UserRepository
 		h(rw, r, user, users)
 	}
 }
+
+type ProtectedWebHandler func(rw http.ResponseWriter, r *http.Request, u User, users UserRepository, hub *Hub)
+
+func (j *JWTService) jwtWeb(users UserRepository, h ProtectedWebHandler) http.HandlerFunc {
+	return func(rw http.ResponseWriter, r *http.Request) {
+		AccessRole := "AdminRole"
+		authHeader := r.Header.Get("Authorization")
+		token := strings.TrimPrefix(authHeader, "Bearer ")
+		jwtAuth, err := j.ParseJWT(token)
+		if err != nil {
+			handleError(errors.New("unauthorized"), rw)
+			return
+		}
+		user, err := users.Get(jwtAuth.Email)
+		if err != nil {
+			handleError(errors.New("unauthorized"), rw)
+			return
+		}
+		if user.Ban {
+			rw.WriteHeader(401)
+			handleError(errors.New("you are banned! Reason: "+
+				user.BanHistory[len(user.BanHistory)-1].Reason),
+				rw)
+			return
+		}
+		if user.Role == "UserRole" || user.Role == "" {
+			if AccessRole == "AdminRole" {
+				handleError(errors.New("permission denied"), rw)
+				return
+			}
+		}
+
+		h(rw, r, user, users, nil)
+	}
+}

@@ -44,10 +44,8 @@ func main() {
 			select {
 
 			case Wroom <- ch:
-
 				ch <- i
 				<-ch
-
 			default:
 				log.Println("Customer", i, "decides today isn't a good day for a haircut.")
 			}

@@ -24,7 +24,8 @@ type UserRepository interface {
 }
 
 type UserService struct {
-	repository UserRepository
+	ChanMessage chan []byte
+	repository  UserRepository
 }
 
 type UserRegisterParams struct {
@@ -90,7 +91,9 @@ func (u *UserService) Register(w http.ResponseWriter, r *http.Request) {
 		handleError(err, w)
 		return
 	}
+	RegisterMetric.Inc()
 	w.WriteHeader(http.StatusCreated)
 	w.Write([]byte("registered"))
+	u.SendChanMessage("registered")
 
 }
