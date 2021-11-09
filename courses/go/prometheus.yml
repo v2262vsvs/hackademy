@@ -1,0 +1,12 @@
+prometheus:
+  network_mode: host
+  image: prom/prometheus
+  volumes:
+- ./prometheus.yml:/etc/prometheus/prometheus.yml
+global:
+  scrape_interval: 15s # By default, scrape targets every 15 seconds.
+scrape_configs:
+  - job_name: "api_service"
+    scrape_interval: 5s
+    static_configs:
+      - targets: ["localhost:2112"]

@@ -4,6 +4,41 @@ import (
 	"testing"
 )
 
+func Bracket(input string) (asnwer bool, err error) {
+
+	err = nil
+
+	braces := map[rune]rune{}
+
+	braces['{'] = '}'
+	braces['['] = ']'
+	braces['('] = ')'
+
+	mod2 := make([]string, 0)
+	for _, b := range input {
+		closed, ok := braces[b]
+		if ok {
+			mod2 = append(mod2, string(closed))
+		} else {
+			length := len(mod2)
+			if length > 0 && mod2[length-1] == string(b) {
+				mod2 = mod2[:len(mod2)-1]
+			} else {
+				answer := false
+				return answer, err
+			}
+		}
+	}
+	if len(mod2) != 0 {
+		answer := false
+		return answer, err
+	} else {
+		answer := true
+		return answer, err
+	}
+
+}
+
 var testCases = []struct {
 	input    string
 	expected bool
