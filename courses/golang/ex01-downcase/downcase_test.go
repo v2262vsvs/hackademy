@@ -58,15 +58,3 @@ func BenchmarkDowncase(b *testing.B) {
 		b.StopTimer()
 	}
 }
-
-func Downcase(s string) (lowS string, err error) {
-
-	for _, i := range s {
-		if i >= 65 && i <= 90 {
-			lowS += string(i + 32)
-		} else {
-			lowS += string(i)
-		}
-	}
-	return lowS, nil
-}

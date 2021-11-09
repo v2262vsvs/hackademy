@@ -5,41 +5,6 @@ import (
 	"testing"
 )
 
-type FreqMap map[rune]int
-
-func Frequency(s string) FreqMap {
-
-	m := FreqMap{}
-
-	for _, r := range s {
-		m[r]++
-	}
-	return m
-}
-
-func ConcurrentFrequency(strings []string) FreqMap {
-
-	sum := FreqMap{}
-	results := make(chan FreqMap, 3)
-
-	for _, s := range strings {
-		go func(s string) {
-			results <- Frequency(s)
-		}(s)
-	}
-
-	for r, freq := range <-results {
-		sum[r] += freq
-	}
-	for r, freq := range <-results {
-		sum[r] += freq
-	}
-	for r, freq := range <-results {
-		sum[r] += freq
-	}
-	return sum
-}
-
 func TestConcurrentFrequency(t *testing.T) {
 	seq := Frequency(euro + dutch + us)
 	con := ConcurrentFrequency([]string{euro, dutch, us})
